@@ -1,15 +1,6 @@
 --[[
 	YankuizaLib
 	daydream-inspired UI library
-
-	- pill tabbar + two-column toggle cards (365px, daydreamer style)
-	- toggles, buttons, sliders, dropdowns, inputs, per-element keybinds
-	- config save/load/delete + autoload (filesystem optional, executor-safe)
-	- live theme switching (4 presets) with binding registry + repaint hooks
-	- cached TweenInfos, connection tracking, window:Destroy() cleanup
-	- open/close on ToggleKey (default RightShift), draggable tabbar
-
-	https://github.com/yankuiza026-hue/YankuizaLib"))()
 ]]
 
 local TweenService = game:GetService("TweenService")
@@ -20,7 +11,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 local Yankuiza = {
-	Version = "ALPHA",
+	Version = "Alpha",
 	Theme = {},
 	Windows = {},
 	Bindings = {},
@@ -36,7 +27,7 @@ local THEME_PRESETS = Yankuiza.ThemePresets
 THEME_PRESETS.Daydream = {
 	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
 	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Enum.Font.WorkSans,
+	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
 	TextColor = Color3.fromRGB(255, 255, 255),
 	SubTextColor = Color3.fromRGB(168, 168, 168),
 	Background = Color3.fromRGB(5, 5, 5),
@@ -61,7 +52,7 @@ THEME_PRESETS.Daydream = {
 THEME_PRESETS.Midnight = {
 	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
 	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Enum.Font.WorkSans,
+	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
 	TextColor = Color3.fromRGB(235, 240, 252),
 	SubTextColor = Color3.fromRGB(146, 158, 184),
 	Background = Color3.fromRGB(7, 10, 18),
@@ -86,7 +77,7 @@ THEME_PRESETS.Midnight = {
 THEME_PRESETS.Ivory = {
 	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
 	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Enum.Font.WorkSans,
+	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
 	TextColor = Color3.fromRGB(26, 27, 33),
 	SubTextColor = Color3.fromRGB(128, 129, 140),
 	Background = Color3.fromRGB(255, 255, 255),
@@ -111,7 +102,7 @@ THEME_PRESETS.Ivory = {
 THEME_PRESETS.Ember = {
 	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
 	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Enum.Font.WorkSans,
+	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
 	TextColor = Color3.fromRGB(252, 246, 240),
 	SubTextColor = Color3.fromRGB(178, 146, 132),
 	Background = Color3.fromRGB(10, 6, 4),
