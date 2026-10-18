@@ -37,6 +37,9 @@ THEME_PRESETS.Daydream = {
 	Selector = Color3.fromRGB(21, 21, 21),
 	Popup = Color3.fromRGB(11, 11, 11),
 	PopupHover = Color3.fromRGB(30, 30, 30),
+	Glass = Color3.fromRGB(255, 255, 255),
+	GlassTransparency = 0.76,
+	GlassStroke = Color3.fromRGB(255, 255, 255),
 	CardWidth = 365,
 	ColumnGap = 15,
 	RowGap = 13,
@@ -62,6 +65,9 @@ THEME_PRESETS.Midnight = {
 	Selector = Color3.fromRGB(13, 18, 30),
 	Popup = Color3.fromRGB(6, 9, 16),
 	PopupHover = Color3.fromRGB(20, 27, 42),
+	Glass = Color3.fromRGB(255, 255, 255),
+	GlassTransparency = 0.74,
+	GlassStroke = Color3.fromRGB(255, 255, 255),
 	CardWidth = THEME_PRESETS.Daydream.CardWidth,
 	ColumnGap = THEME_PRESETS.Daydream.ColumnGap,
 	RowGap = THEME_PRESETS.Daydream.RowGap,
@@ -87,6 +93,9 @@ THEME_PRESETS.Ivory = {
 	Selector = Color3.fromRGB(240, 240, 244),
 	Popup = Color3.fromRGB(252, 252, 254),
 	PopupHover = Color3.fromRGB(232, 233, 240),
+	Glass = Color3.fromRGB(255, 255, 255),
+	GlassTransparency = 0.62,
+	GlassStroke = Color3.fromRGB(140, 140, 150),
 	CardWidth = THEME_PRESETS.Daydream.CardWidth,
 	ColumnGap = THEME_PRESETS.Daydream.ColumnGap,
 	RowGap = THEME_PRESETS.Daydream.RowGap,
@@ -112,6 +121,9 @@ THEME_PRESETS.Ember = {
 	Selector = Color3.fromRGB(4, 2, 1),
 	Popup = Color3.fromRGB(12, 7, 4),
 	PopupHover = Color3.fromRGB(34, 20, 12),
+	Glass = Color3.fromRGB(255, 255, 255),
+	GlassTransparency = 0.76,
+	GlassStroke = Color3.fromRGB(255, 255, 255),
 	CardWidth = THEME_PRESETS.Daydream.CardWidth,
 	ColumnGap = THEME_PRESETS.Daydream.ColumnGap,
 	RowGap = THEME_PRESETS.Daydream.RowGap,
@@ -144,6 +156,22 @@ local Layer = {
 
 local DRAG_THRESHOLD = 6
 
+local LiquidGlass = nil
+if type(loadstring) == "function" then
+	pcall(function()
+		local source = game:HttpGet("https://raw.githubusercontent.com/alexkkork/liquid-glass-luau/main/LiquidGlass.luau")
+		if type(source) == "string" then
+			local loader = loadstring(source)
+			if loader then
+				local ok, result = pcall(loader)
+				if ok then
+					LiquidGlass = result
+				end
+			end
+		end
+	end)
+end
+
 local ThemeBindings = {}
 local ThemeHooks = {}
 
@@ -152,7 +180,7 @@ local function cachedInfo(duration, style, direction)
 	local key = string.format("%s|%s|%s", duration, tostring(style), tostring(direction))
 	local cached = TweenInfoCache[key]
 	if not cached then
-		cached = TweenInfo.new(duration, style or Enum.EasingStyle.Quart, direction or Enum.EasingDirection.Out)
+		cached = TweenInfo.new(duration, style or Enum.EasingStyle.Quint, direction or Enum.EasingDirection.Out)
 		TweenInfoCache[key] = cached
 	end
 	return cached
@@ -321,6 +349,7 @@ local function openPopup(anchorButton, width, items)
 	local popup = add(overlay, "CanvasGroup", {
 		Name = "Popup",
 		BackgroundColor3 = theme.Popup,
+		BackgroundTransparency = 0.08,
 		BorderSizePixel = 0,
 		Size = UDim2.new(0, width, 0, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
@@ -328,6 +357,11 @@ local function openPopup(anchorButton, width, items)
 		ZIndex = Layer.Popup + 1,
 	})
 	corner(popup, 16)
+	add(popup, "UIStroke", {
+		Color = Color3.fromRGB(255, 255, 255),
+		Transparency = 0.88,
+		Thickness = 1,
+	})
 
 	local listParent = popup
 	if #items > 7 then
@@ -364,9 +398,13 @@ local function openPopup(anchorButton, width, items)
 	if y + 250 > viewport.Y then
 		y = math.max(abs.Y - 215, 8)
 	end
-	popup.Position = UDim2.new(0, math.clamp(x, 8, viewport.X - width - 8), 0, y)
+	local popupPosition = UDim2.new(0, math.clamp(x, 8, viewport.X - width - 8), 0, y)
+	popup.Position = UDim2.new(popupPosition.X.Scale, popupPosition.X.Offset, popupPosition.Y.Scale, popupPosition.Y.Offset - 8)
 	popup.GroupTransparency = 1
-	tween(popup, { GroupTransparency = 0 }, cachedInfo(0.12, Enum.EasingStyle.Quart))
+	tween(popup, {
+		GroupTransparency = 0,
+		Position = popupPosition,
+	}, cachedInfo(0.16, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
 
 	for index, item in ipairs(items) do
 		local button = add(listParent, "TextButton", {
@@ -420,6 +458,7 @@ function Yankuiza:Notify(title, desc, seconds)
 	local toast = add(self._NativeGui, "CanvasGroup", {
 		Name = "Toast",
 		BackgroundColor3 = theme.Background,
+		BackgroundTransparency = 0.1,
 		BorderSizePixel = 0,
 		AnchorPoint = Vector2.new(1, 1),
 		Position = UDim2.new(1, 40, 1, -24),
@@ -429,6 +468,11 @@ function Yankuiza:Notify(title, desc, seconds)
 		LayoutOrder = #self.ToastStack + 1,
 	})
 	corner(toast, 14)
+	add(toast, "UIStroke", {
+		Color = Color3.fromRGB(255, 255, 255),
+		Transparency = 0.88,
+		Thickness = 1,
+	})
 	add(toast, "UIPadding", {
 		PaddingTop = UDim.new(0, 12),
 		PaddingBottom = UDim.new(0, 12),
@@ -589,6 +633,7 @@ function Yankuiza:CreateWindow(config)
 		Visible = false,
 		_ActiveTab = nil,
 		_Connections = {},
+		_Glasses = {},
 		_Gui = nil,
 	}
 	self.Windows[window.Name] = window
@@ -599,6 +644,48 @@ function Yankuiza:CreateWindow(config)
 	local tracked = function(connection)
 		table.insert(window._Connections, connection)
 		return connection
+	end
+
+	local function createGlass(parent, cornerRadius)
+		if not LiquidGlass then
+			return nil
+		end
+		local ok, glass = pcall(LiquidGlass.new, {
+			Parent = parent,
+			Size = UDim2.new(1, 0, 1, 0),
+			Position = UDim2.new(0.5, 0, 0.5, 0),
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			ZIndex = 1,
+			CornerRadius = cornerRadius,
+			Elasticity = 0,
+			HoverHighlight = false,
+			ClickScale = 1,
+			ShadowColor = Color3.fromRGB(0, 0, 0),
+			ShadowTransparency = 0.78,
+			ShadowOffset = Vector2.new(0, 4),
+			ShadowSize = 12,
+		})
+		if not ok or not glass then
+			return nil
+		end
+		local container = glass:GetFrame()
+		local capture = container and container:FindFirstChild("InputCapture")
+		if capture then
+			capture:Destroy()
+		end
+		local base = container and container:FindFirstChild("GlassBase")
+		local border = container and container:FindFirstChild("Border")
+		local stroke = border and border:FindFirstChildOfClass("UIStroke")
+		if base then
+			bind(base, "BackgroundColor3", "Glass")
+			base.BackgroundTransparency = theme.GlassTransparency
+		end
+		if stroke then
+			bind(stroke, "Color", "GlassStroke")
+			stroke.Transparency = 0.55
+		end
+		table.insert(window._Glasses, glass)
+		return glass, base, stroke
 	end
 
 	local gui = Instance.new("ScreenGui")
@@ -623,35 +710,55 @@ function Yankuiza:CreateWindow(config)
 		BorderSizePixel = 0,
 	})
 
-	local bar = add(root, "Frame", {
+	local bar = add(root, "CanvasGroup", {
 		Name = "TabBar",
 		AutomaticSize = Enum.AutomaticSize.X,
-		Size = UDim2.new(0, 0, 0, 40),
+		Size = UDim2.new(0, 0, 0, 48),
 		BackgroundColor3 = theme.Background,
+		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 0),
 		ZIndex = Layer.Bar,
 	})
-	corner(bar, 20)
-	bind(bar, "BackgroundColor3", "Background")
-	add(bar, "UIListLayout", {
+	corner(bar, 24)
+	local barGlass = createGlass(bar, UDim.new(0, 24))
+	if barGlass then
+		bar.BackgroundTransparency = 1
+	else
+		bind(bar, "BackgroundColor3", "Background")
+	end
+
+	local barRow = add(bar, "Frame", {
+		Name = "Row",
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.new(0, 0, 0, 34),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+		ZIndex = Layer.Bar + 1,
+	})
+	add(barRow, "UIListLayout", {
 		FillDirection = Enum.FillDirection.Horizontal,
 		SortOrder = Enum.SortOrder.LayoutOrder,
-		Padding = UDim.new(0, 4),
+		Padding = UDim.new(0, 5),
 		VerticalAlignment = Enum.VerticalAlignment.Center,
 	})
-	add(bar, "UIPadding", {
-		PaddingTop = UDim.new(0, 6),
-		PaddingBottom = UDim.new(0, 6),
-		PaddingLeft = UDim.new(0, 10),
-		PaddingRight = UDim.new(0, 10),
+	local dragSurface = add(bar, "TextButton", {
+		Name = "DragSurface",
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Text = "",
+		AutoButtonColor = false,
+		Size = UDim2.new(1, 0, 1, 0),
+		ZIndex = Layer.Bar,
 	})
 
 	local content = add(root, "Frame", {
 		Name = "Content",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 64),
+		Position = UDim2.new(0.5, 0, 0, 70),
 		Size = UDim2.new(0, totalWidth, 0, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
 		BackgroundTransparency = 1,
@@ -663,7 +770,7 @@ function Yankuiza:CreateWindow(config)
 	local dragMoved = false
 	local dragStart = nil
 	local startPosition = nil
-	tracked(bar.InputBegan:Connect(function(input)
+	tracked(dragSurface.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			dragMoved = false
@@ -710,18 +817,32 @@ function Yankuiza:CreateWindow(config)
 			LayoutOrder = tab._count,
 			Size = UDim2.new(0, theme.CardWidth, 0, height),
 			BackgroundColor3 = theme.Card,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			ZIndex = Layer.Content,
 		})
 		corner(card, 16)
-		bind(card, "BackgroundColor3", "Card")
+		local glass, glassBase, glassStroke = createGlass(card, UDim.new(0, 16))
 		table.insert(tab._cards, card)
-		card.MouseEnter:Connect(function()
-			tween(card, { BackgroundColor3 = theme.CardHover }, cachedInfo(Motion.Fast))
-		end)
-		card.MouseLeave:Connect(function()
-			tween(card, { BackgroundColor3 = theme.Card }, cachedInfo(Motion.Fast))
-		end)
+		if glassBase then
+			card.MouseEnter:Connect(function()
+				tween(glassBase, { BackgroundTransparency = theme.GlassTransparency - 0.07 }, cachedInfo(Motion.Fast))
+				tween(glassStroke, { Transparency = 0.35 }, cachedInfo(Motion.Fast))
+			end)
+			card.MouseLeave:Connect(function()
+				tween(glassBase, { BackgroundTransparency = theme.GlassTransparency }, cachedInfo(Motion.Fast))
+				tween(glassStroke, { Transparency = 0.55 }, cachedInfo(Motion.Fast))
+			end)
+		else
+			card.BackgroundTransparency = 0
+			bind(card, "BackgroundColor3", "Card")
+			card.MouseEnter:Connect(function()
+				tween(card, { BackgroundColor3 = theme.CardHover }, cachedInfo(Motion.Fast))
+			end)
+			card.MouseLeave:Connect(function()
+				tween(card, { BackgroundColor3 = theme.Card }, cachedInfo(Motion.Fast))
+			end)
+		end
 
 		local title = add(card, "TextLabel", {
 			Name = "Title",
@@ -961,22 +1082,22 @@ function Yankuiza:CreateWindow(config)
 			})
 		end
 
-		local button = add(bar, "TextButton", {
+		local button = add(barRow, "TextButton", {
 			Name = name,
 			LayoutOrder = #window.Tabs + 1,
 			AutoButtonColor = false,
 			BackgroundTransparency = 1,
-			Font = theme.FontMedium,
-			TextSize = 16,
+			Font = theme.Font,
+			TextSize = 18,
 			TextColor3 = theme.TextColor,
 			Text = name,
-			Size = UDim2.new(0, 0, 0, 28),
+			Size = UDim2.new(0, 0, 0, 34),
 			AutomaticSize = Enum.AutomaticSize.X,
 		})
 		corner(button, 999)
 		add(button, "UIPadding", {
-			PaddingLeft = UDim.new(0, 20),
-			PaddingRight = UDim.new(0, 20),
+			PaddingLeft = UDim.new(0, 24),
+			PaddingRight = UDim.new(0, 24),
 		})
 		tab._button = button
 
@@ -993,9 +1114,9 @@ function Yankuiza:CreateWindow(config)
 			tween(button, { BackgroundColor3 = theme.Pill, BackgroundTransparency = 0 }, cachedInfo(Motion.Fast))
 			for index, card in ipairs(tab._cards) do
 				card.GroupTransparency = 1
-				task.delay((index - 1) * 0.03, function()
+				task.delay((index - 1) * 0.035, function()
 					if alive(card) then
-						tween(card, { GroupTransparency = 0 }, cachedInfo(Motion.Slow))
+						tween(card, { GroupTransparency = 0 }, cachedInfo(0.26, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
 					end
 				end)
 			end
@@ -1286,6 +1407,7 @@ function Yankuiza:CreateWindow(config)
 				Name = "Selector",
 				AutoButtonColor = false,
 				BackgroundColor3 = theme.Selector,
+				BackgroundTransparency = 0.12,
 				BorderSizePixel = 0,
 				Position = UDim2.new(0, 16, 0, boxY),
 				Size = UDim2.new(1, -32, 0, 26),
@@ -1372,6 +1494,7 @@ function Yankuiza:CreateWindow(config)
 			local box = add(card, "TextBox", {
 				Name = "Box",
 				BackgroundColor3 = theme.Selector,
+				BackgroundTransparency = 0.12,
 				Text = "",
 				PlaceholderText = cfg.Placeholder or "Type here",
 				PlaceholderColor3 = theme.SubTextColor,
@@ -1585,6 +1708,12 @@ function Yankuiza:CreateWindow(config)
 
 	function window:Destroy()
 		closePopup()
+		for _, glassObject in ipairs(self._Glasses) do
+			pcall(function()
+				glassObject:Destroy()
+			end)
+		end
+		self._Glasses = {}
 		for index = #self._Connections, 1, -1 do
 			local connection = self._Connections[index]
 			connection:Disconnect()
@@ -1606,11 +1735,16 @@ function Yankuiza:CreateWindow(config)
 		if window.Visible then
 			root.Visible = true
 			root.GroupTransparency = 1
-			tween(root, { GroupTransparency = 0 }, cachedInfo(0.22, Enum.EasingStyle.Quart, Enum.EasingDirection.Out))
+			local current = root.Position
+			root.Position = UDim2.new(current.X.Scale, current.X.Offset, current.Y.Scale, current.Y.Offset - 12)
+			tween(root, {
+				GroupTransparency = 0,
+				Position = current,
+			}, cachedInfo(0.26, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
 		else
 			closePopup()
-			tween(root, { GroupTransparency = 1 }, cachedInfo(0.16, Enum.EasingStyle.Quart, Enum.EasingDirection.In))
-			task.delay(0.2, function()
+			tween(root, { GroupTransparency = 1 }, cachedInfo(0.18, Enum.EasingStyle.Quint, Enum.EasingDirection.In))
+			task.delay(0.22, function()
 				if not window.Visible then
 					root.Visible = false
 				end
