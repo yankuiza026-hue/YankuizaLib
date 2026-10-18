@@ -190,6 +190,9 @@ local function add(parent, class, props)
 end
 
 local function corner(parent, radius)
+	if typeof(radius) == "UDim" then
+		return add(parent, "UICorner", { CornerRadius = radius })
+	end
 	if radius >= 100 then
 		radius = nil
 	end
