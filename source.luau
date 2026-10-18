@@ -1,8 +1,3 @@
---[[
-	YankuizaLib
-	daydream-inspired UI library
-]]
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
@@ -11,7 +6,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 local Yankuiza = {
-	Version = "Alpha",
 	Theme = {},
 	Windows = {},
 	Bindings = {},
@@ -172,7 +166,7 @@ local function add(parent, class, props)
 	local object = Instance.new(class)
 	for key, value in pairs(props or {}) do
 		if key ~= "Parent" then
-			if typeof(value) == "Instance" and value:IsA("Font") then
+			if typeof(value) == "Font" then
 				object.FontFace = value
 			else
 				object[key] = value

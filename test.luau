@@ -1,5 +1,3 @@
--- test.luau
-
 local Players = game:GetService("Players")
 
 local Yankuiza
