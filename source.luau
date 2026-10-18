@@ -19,15 +19,16 @@ Yankuiza.ThemePresets = {}
 local THEME_PRESETS = Yankuiza.ThemePresets
 
 THEME_PRESETS.Daydream = {
-	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
-	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
+	Font = Enum.Font.GothamBold,
+	FontMedium = Enum.Font.GothamMedium,
+	FontNormal = Enum.Font.Gotham,
 	TextColor = Color3.fromRGB(255, 255, 255),
 	SubTextColor = Color3.fromRGB(168, 168, 168),
 	Background = Color3.fromRGB(5, 5, 5),
 	Card = Color3.fromRGB(0, 0, 0),
 	CardHover = Color3.fromRGB(19, 19, 19),
-	Pill = Color3.fromRGB(43, 43, 43),
+	Pill = Color3.fromRGB(255, 255, 255),
+	PillText = Color3.fromRGB(12, 12, 12),
 	Knob = Color3.fromRGB(255, 255, 255),
 	KnobOn = Color3.fromRGB(105, 210, 235),
 	TrackOn = Color3.fromRGB(238, 246, 249),
@@ -47,15 +48,16 @@ THEME_PRESETS.Daydream = {
 }
 
 THEME_PRESETS.Midnight = {
-	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
-	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
+	Font = Enum.Font.GothamBold,
+	FontMedium = Enum.Font.GothamMedium,
+	FontNormal = Enum.Font.Gotham,
 	TextColor = Color3.fromRGB(235, 240, 252),
 	SubTextColor = Color3.fromRGB(146, 158, 184),
 	Background = Color3.fromRGB(7, 10, 18),
 	Card = Color3.fromRGB(3, 5, 10),
 	CardHover = Color3.fromRGB(12, 17, 28),
-	Pill = Color3.fromRGB(36, 46, 68),
+	Pill = Color3.fromRGB(228, 240, 255),
+	PillText = Color3.fromRGB(8, 14, 28),
 	Knob = Color3.fromRGB(244, 248, 255),
 	KnobOn = Color3.fromRGB(96, 190, 255),
 	TrackOn = Color3.fromRGB(18, 30, 52),
@@ -75,15 +77,16 @@ THEME_PRESETS.Midnight = {
 }
 
 THEME_PRESETS.Ivory = {
-	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
-	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
+	Font = Enum.Font.GothamBold,
+	FontMedium = Enum.Font.GothamMedium,
+	FontNormal = Enum.Font.Gotham,
 	TextColor = Color3.fromRGB(26, 27, 33),
 	SubTextColor = Color3.fromRGB(128, 129, 140),
 	Background = Color3.fromRGB(255, 255, 255),
 	Card = Color3.fromRGB(246, 246, 249),
 	CardHover = Color3.fromRGB(236, 237, 242),
-	Pill = Color3.fromRGB(226, 227, 235),
+	Pill = Color3.fromRGB(28, 28, 32),
+	PillText = Color3.fromRGB(255, 255, 255),
 	Knob = Color3.fromRGB(255, 255, 255),
 	KnobOn = Color3.fromRGB(64, 196, 232),
 	TrackOn = Color3.fromRGB(36, 38, 46),
@@ -103,15 +106,16 @@ THEME_PRESETS.Ivory = {
 }
 
 THEME_PRESETS.Ember = {
-	Font = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Bold),
-	FontMedium = Font.new("rbxasset://fonts/families/WorkSans.json", Enum.FontWeight.Medium),
-	FontNormal = Font.new("rbxasset://fonts/families/WorkSans.json"),
+	Font = Enum.Font.GothamBold,
+	FontMedium = Enum.Font.GothamMedium,
+	FontNormal = Enum.Font.Gotham,
 	TextColor = Color3.fromRGB(252, 246, 240),
 	SubTextColor = Color3.fromRGB(178, 146, 132),
 	Background = Color3.fromRGB(10, 6, 4),
 	Card = Color3.fromRGB(4, 2, 1),
 	CardHover = Color3.fromRGB(24, 13, 9),
-	Pill = Color3.fromRGB(72, 38, 22),
+	Pill = Color3.fromRGB(255, 235, 226),
+	PillText = Color3.fromRGB(40, 16, 6),
 	Knob = Color3.fromRGB(255, 255, 255),
 	KnobOn = Color3.fromRGB(255, 122, 74),
 	TrackOn = Color3.fromRGB(252, 238, 228),
@@ -156,22 +160,6 @@ local Layer = {
 
 local DRAG_THRESHOLD = 6
 
-local LiquidGlass = nil
-if type(loadstring) == "function" then
-	pcall(function()
-		local source = game:HttpGet("https://raw.githubusercontent.com/alexkkork/liquid-glass-luau/main/LiquidGlass.luau")
-		if type(source) == "string" then
-			local loader = loadstring(source)
-			if loader then
-				local ok, result = pcall(loader)
-				if ok then
-					LiquidGlass = result
-				end
-			end
-		end
-	end)
-end
-
 local ThemeBindings = {}
 local ThemeHooks = {}
 
@@ -194,11 +182,7 @@ local function add(parent, class, props)
 	local object = Instance.new(class)
 	for key, value in pairs(props or {}) do
 		if key ~= "Parent" then
-			if typeof(value) == "Font" then
-				object.FontFace = value
-			else
-				object[key] = value
-			end
+			object[key] = value
 		end
 	end
 	object.Parent = parent
@@ -633,7 +617,6 @@ function Yankuiza:CreateWindow(config)
 		Visible = false,
 		_ActiveTab = nil,
 		_Connections = {},
-		_Glasses = {},
 		_Gui = nil,
 	}
 	self.Windows[window.Name] = window
@@ -647,45 +630,98 @@ function Yankuiza:CreateWindow(config)
 	end
 
 	local function createGlass(parent, cornerRadius)
-		if not LiquidGlass then
-			return nil
-		end
-		local ok, glass = pcall(LiquidGlass.new, {
-			Parent = parent,
+		local container = add(parent, "Frame", {
+			Name = "Glass",
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 1, 0),
-			Position = UDim2.new(0.5, 0, 0.5, 0),
-			AnchorPoint = Vector2.new(0.5, 0.5),
 			ZIndex = 1,
-			CornerRadius = cornerRadius,
-			Elasticity = 0,
-			HoverHighlight = false,
-			ClickScale = 1,
-			ShadowColor = Color3.fromRGB(0, 0, 0),
-			ShadowTransparency = 0.78,
-			ShadowOffset = Vector2.new(0, 4),
-			ShadowSize = 12,
 		})
-		if not ok or not glass then
-			return nil
-		end
-		local container = glass:GetFrame()
-		local capture = container and container:FindFirstChild("InputCapture")
-		if capture then
-			capture:Destroy()
-		end
-		local base = container and container:FindFirstChild("GlassBase")
-		local border = container and container:FindFirstChild("Border")
-		local stroke = border and border:FindFirstChildOfClass("UIStroke")
-		if base then
-			bind(base, "BackgroundColor3", "Glass")
-			base.BackgroundTransparency = theme.GlassTransparency
-		end
-		if stroke then
-			bind(stroke, "Color", "GlassStroke")
-			stroke.Transparency = 0.55
-		end
-		table.insert(window._Glasses, glass)
-		return glass, base, stroke
+		local shadow = add(container, "Frame", {
+			Name = "Shadow",
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+			BackgroundTransparency = 0.82,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, 0, 0.5, 4),
+			Size = UDim2.new(1, 16, 1, 26),
+		})
+		local shadowCorner = add(shadow, "UICorner", {})
+		shadowCorner.CornerRadius = UDim.new(cornerRadius.Scale, cornerRadius.Offset + 9)
+		add(shadow, "UIGradient", {
+			Rotation = 90,
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.7),
+				NumberSequenceKeypoint.new(0.6, 0.85),
+				NumberSequenceKeypoint.new(1, 1),
+			}),
+		})
+		local base = add(container, "Frame", {
+			Name = "Base",
+			BackgroundColor3 = theme.Glass,
+			BackgroundTransparency = theme.GlassTransparency,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, 0, 0.5, 0),
+			Size = UDim2.new(1, 0, 1, 0),
+		})
+		corner(base, cornerRadius)
+		bind(base, "BackgroundColor3", "Glass")
+		local tint = add(base, "Frame", {
+			Name = "Tint",
+			BackgroundColor3 = Color3.fromRGB(200, 200, 220),
+			BackgroundTransparency = 0.9,
+			BorderSizePixel = 0,
+			Size = UDim2.new(1, 0, 1, 0),
+		})
+		corner(tint, cornerRadius)
+		local glow = add(container, "Frame", {
+			Name = "Glow",
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BackgroundTransparency = 0.65,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.new(0.5, 0, 0, 1),
+			Size = UDim2.new(1, -6, 0.5, 0),
+		})
+		corner(glow, math.max(0, cornerRadius.Offset - 2))
+		add(glow, "UIGradient", {
+			Rotation = 90,
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.4, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+			}),
+			Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.7),
+				NumberSequenceKeypoint.new(0.4, 0.88),
+				NumberSequenceKeypoint.new(1, 1),
+			}),
+		})
+		local border = add(container, "Frame", {
+			Name = "Border",
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			Position = UDim2.new(0.5, 0, 0.5, 0),
+			Size = UDim2.new(1, 0, 1, 0),
+		})
+		corner(border, cornerRadius)
+		local stroke = add(border, "UIStroke", {
+			Color = theme.GlassStroke,
+			Transparency = 0.55,
+			Thickness = 1,
+		})
+		bind(stroke, "Color", "GlassStroke")
+		add(stroke, "UIGradient", {
+			Rotation = 135,
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(224, 228, 242)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+			}),
+		})
+		return container, base, stroke
 	end
 
 	local gui = Instance.new("ScreenGui")
@@ -697,7 +733,7 @@ function Yankuiza:CreateWindow(config)
 	protect(gui)
 	window._Gui = gui
 
-	local totalWidth = theme.CardWidth * 2 + theme.ColumnGap
+	local totalWidth = theme.CardWidth
 
 	local root = add(gui, "CanvasGroup", {
 		Name = "Root",
@@ -811,38 +847,15 @@ function Yankuiza:CreateWindow(config)
 
 	local function makeCard(tab, cfg, height, tall)
 		tab._count = (tab._count or 0) + 1
-		local column = (tab._count % 2 == 1) and tab._colLeft or tab._colRight
-		local card = add(column, "CanvasGroup", {
+		local card = add(tab._holder, "Frame", {
 			Name = cfg.Name or "Element",
 			LayoutOrder = tab._count,
-			Size = UDim2.new(0, theme.CardWidth, 0, height),
-			BackgroundColor3 = theme.Card,
+			Size = UDim2.new(1, 0, 0, height),
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			ZIndex = Layer.Content,
 		})
-		corner(card, 16)
-		local glass, glassBase, glassStroke = createGlass(card, UDim.new(0, 16))
 		table.insert(tab._cards, card)
-		if glassBase then
-			card.MouseEnter:Connect(function()
-				tween(glassBase, { BackgroundTransparency = theme.GlassTransparency - 0.07 }, cachedInfo(Motion.Fast))
-				tween(glassStroke, { Transparency = 0.35 }, cachedInfo(Motion.Fast))
-			end)
-			card.MouseLeave:Connect(function()
-				tween(glassBase, { BackgroundTransparency = theme.GlassTransparency }, cachedInfo(Motion.Fast))
-				tween(glassStroke, { Transparency = 0.55 }, cachedInfo(Motion.Fast))
-			end)
-		else
-			card.BackgroundTransparency = 0
-			bind(card, "BackgroundColor3", "Card")
-			card.MouseEnter:Connect(function()
-				tween(card, { BackgroundColor3 = theme.CardHover }, cachedInfo(Motion.Fast))
-			end)
-			card.MouseLeave:Connect(function()
-				tween(card, { BackgroundColor3 = theme.Card }, cachedInfo(Motion.Fast))
-			end)
-		end
 
 		local title = add(card, "TextLabel", {
 			Name = "Title",
@@ -1049,38 +1062,33 @@ function Yankuiza:CreateWindow(config)
 			_cards = {},
 			_count = 0,
 		}
-		tab._holder = add(content, "Frame", {
+		tab._holder = add(content, "CanvasGroup", {
 			Name = name,
-			Size = UDim2.new(0, totalWidth, 0, 0),
+			Size = UDim2.new(0, totalWidth, 0, 52),
 			AutomaticSize = Enum.AutomaticSize.Y,
+			BackgroundColor3 = theme.Background,
 			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Visible = false,
 			ZIndex = Layer.Content,
 		})
-		tab._colLeft = add(tab._holder, "Frame", {
-			Name = "Left",
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Position = UDim2.new(0, 0, 0, 0),
-			Size = UDim2.new(0, theme.CardWidth, 0, 0),
-			AutomaticSize = Enum.AutomaticSize.Y,
-		})
-		tab._colRight = add(tab._holder, "Frame", {
-			Name = "Right",
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Position = UDim2.new(0, theme.CardWidth + theme.ColumnGap, 0, 0),
-			Size = UDim2.new(0, theme.CardWidth, 0, 0),
-			AutomaticSize = Enum.AutomaticSize.Y,
-		})
-		for _, column in ipairs({ tab._colLeft, tab._colRight }) do
-			add(column, "UIListLayout", {
-				FillDirection = Enum.FillDirection.Vertical,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				Padding = UDim.new(0, theme.RowGap),
-			})
+		corner(tab._holder, 18)
+		local panelGlass = createGlass(tab._holder, UDim.new(0, 18))
+		if not panelGlass then
+			tab._holder.BackgroundTransparency = 0
+			bind(tab._holder, "BackgroundColor3", "Background")
 		end
+		add(tab._holder, "UIPadding", {
+			PaddingTop = UDim.new(0, 12),
+			PaddingBottom = UDim.new(0, 12),
+			PaddingLeft = UDim.new(0, 12),
+			PaddingRight = UDim.new(0, 12),
+		})
+		add(tab._holder, "UIListLayout", {
+			FillDirection = Enum.FillDirection.Vertical,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, 8),
+		})
 
 		local button = add(barRow, "TextButton", {
 			Name = name,
@@ -1105,21 +1113,29 @@ function Yankuiza:CreateWindow(config)
 			if window._ActiveTab == tab then
 				return
 			end
-			if window._ActiveTab then
-				window._ActiveTab._holder.Visible = false
-				tween(window._ActiveTab._button, { BackgroundTransparency = 1 }, cachedInfo(Motion.Fast))
-			end
-			window._ActiveTab = tab
-			tab._holder.Visible = true
-			tween(button, { BackgroundColor3 = theme.Pill, BackgroundTransparency = 0 }, cachedInfo(Motion.Fast))
-			for index, card in ipairs(tab._cards) do
-				card.GroupTransparency = 1
-				task.delay((index - 1) * 0.035, function()
-					if alive(card) then
-						tween(card, { GroupTransparency = 0 }, cachedInfo(0.26, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
+			local previous = window._ActiveTab
+			if previous then
+				previous._button.TextColor3 = theme.TextColor
+				tween(previous._button, { BackgroundTransparency = 1 }, cachedInfo(Motion.Fast))
+				tween(previous._holder, { GroupTransparency = 1 }, cachedInfo(0.14, Enum.EasingStyle.Quint, Enum.EasingDirection.In))
+				task.delay(0.16, function()
+					if window._ActiveTab ~= tab and alive(previous._holder) then
+						previous._holder.Visible = false
 					end
 				end)
 			end
+			window._ActiveTab = tab
+			tab._holder.Visible = true
+			tab._holder.GroupTransparency = 1
+			local basePosition = tab._holder.Position
+			tab._holder.Position = UDim2.new(basePosition.X.Scale, basePosition.X.Offset, basePosition.Y.Scale, basePosition.Y.Offset + 10)
+			tween(tab._holder, {
+				GroupTransparency = 0,
+				Position = basePosition,
+			}, cachedInfo(0.26, Enum.EasingStyle.Quint, Enum.EasingDirection.Out))
+			tween(button, { BackgroundTransparency = 0 }, cachedInfo(Motion.Fast))
+			button.BackgroundColor3 = theme.Pill
+			button.TextColor3 = theme.PillText
 		end
 
 		paintHook(function()
@@ -1128,6 +1144,9 @@ function Yankuiza:CreateWindow(config)
 			end
 			if window._ActiveTab == tab then
 				button.BackgroundColor3 = theme.Pill
+				button.TextColor3 = theme.PillText
+			else
+				button.TextColor3 = theme.TextColor
 			end
 		end)
 
@@ -1708,12 +1727,6 @@ function Yankuiza:CreateWindow(config)
 
 	function window:Destroy()
 		closePopup()
-		for _, glassObject in ipairs(self._Glasses) do
-			pcall(function()
-				glassObject:Destroy()
-			end)
-		end
-		self._Glasses = {}
 		for index = #self._Connections, 1, -1 do
 			local connection = self._Connections[index]
 			connection:Disconnect()
